@@ -23,6 +23,10 @@ class App extends Component {
         });
     };
 
+    setData = (e) => {
+        this.setState({data: e})
+    };
+
     onSelectFile = e => {
         const file = e.target.files[0];
         let { fileReader } = this.state;
@@ -74,7 +78,8 @@ class App extends Component {
                             clear={this.clear}
                             onSelectFile={this.onSelectFile}
                             saveFile={this.saveFile}
-                            newData={this.newData}
+                            data={this.state.data}
+                            setData={this.setData}
                         />
                     )}
                     exact

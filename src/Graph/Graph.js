@@ -2,42 +2,109 @@ import React, { useState } from 'react';
 import NetworkGraph from '../NetworkGraph/NetworkGraph';
 
 const Graph = (props) => {
-    const [ size, setSize ] = useState(2);
-    const [ data, setData ] = useState({});
+    const [ graphData, setGraphData ] = useState({});
     const {
-        createTable,
         onSelectFile,
         saveFile,
-        newData,
         clear,
+        data,
+        setData,
     } = props;
+
+    const sysEl = (data) => (
+        data && data.map((el, index) =>
+            <tr key={index}
+                onChange={changeData}
+            >
+                <td>
+                    <input
+                        type="number"
+                        defaultValue={el.from ? el.from : 1}
+                        min={1}
+                        max={data.length}
+                        name='from'
+                        data-from={index}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        defaultValue={el.to}
+                        min={1}
+                        max={data.length}
+                        data-to={index}
+                    />
+                </td>
+                <td>
+                    <span
+                        id={index}
+                        onClick={delEdge}
+                    >
+                        X
+                    </span>
+                </td>
+            </tr>
+        )
+    );
+
+    const addEdge = () => {
+        data.push({});
+        setData([...data]);
+    };
+
+    const delEdge = (e) => {
+        const newData = data;
+        newData.splice(e.target.id, 1);
+        setData([...newData]);
+    };
+
+    const changeData = (e) => {
+        const newData = data;
+
+        if (e.target.dataset.from) {
+            newData[e.target.dataset.from].from = e.target.value;
+        }
+        if (e.target.dataset.to) {
+            newData[e.target.dataset.to].to = e.target.value;
+        }
+    };
 
     const generateData = () => {
         const nodesArr = [];
         const edgesArr = [];
-        const matrix = newData(size);
 
-        console.log(matrix);
-
-        for (let i = 0; i < size; i++) {
-            nodesArr.push({
-                id: i,
-                label: (i + 1).toString(),
+        data.forEach((el) => {
+            (el.from || el.from === 0) && nodesArr.push({
+                id: el.from,
+                label: el.from,
             });
-        }
 
-        for (let j = 0; j < size; j++) {
-            for (let k = 0; k < size; k++) {
-                console.log(matrix.data[j][k]);
-                if (matrix.data[j][k] !== '0' && matrix.data[j][k] !== '')
-                    edgesArr.push({
-                        from: j,
-                        to: k
-                    });
-            }
-        }
+            el.to && el.to.trim().split(',').forEach((to) => {
+                nodesArr.push({
+                    id: to,
+                    label: to,
+                });
+                edgesArr.push({
+                    from: parseInt(el.from, 10) - 1,
+                    to: parseInt(to, 10) - 1
+                });
+            });
+        });
 
-        setData({ nodesArr, edgesArr });
+        const uniqueId = [];
+        const uniqueArr = [];
+
+        nodesArr.forEach((el) => {
+           if (uniqueId.indexOf(el.id) === -1) {
+               uniqueId.push(el.id);
+               uniqueArr.push({
+                   id: parseInt(el.id - 1, 10),
+                   label: (parseInt(el.label,10)).toString()
+               });
+           }
+        });
+
+        setGraphData({ uniqueArr, edgesArr });
     };
 
     return (
@@ -55,20 +122,10 @@ const Graph = (props) => {
                             defaultValue="file"
                         />
                     </div>
-                    <div className="matType">
-                    <span>
-                        Матриця розмірністю
-                    </span>
-                        <input
-                            type='number'
-                            onChange={e => setSize(e.target.value)}
-                            value={size}
-                        />
-                    </div>
                 </div>
                 <div className="tableOperations">
                     <span>
-                        <a href="/" id="save" onClick={() => saveFile(size)}>Зберегти</a>
+                        <a href="/" id="save" onClick={() => saveFile(data.length)}>Зберегти</a>
                     </span>
                     <input
                         type="file"
@@ -82,11 +139,36 @@ const Graph = (props) => {
                     </span>
                 </div>
             </div>
-            {createTable(size)}
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <span>З</span>
+                        </th>
+                        <th>
+                            <span>До</span>
+                        </th>
+                        <th>
+                            <span>Видалити</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sysEl(data)}
+                    <tr>
+                        <td
+                            colSpan={3}
+                            onClick={addEdge}
+                        >
+                            Додати
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <h2 onClick={() => generateData()}>Згенерувати</h2>
             <div className="network">
                 <NetworkGraph
-                    data={data}
+                    data={graphData}
                 />
             </div>
         </div>

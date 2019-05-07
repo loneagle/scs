@@ -3,10 +3,11 @@ import { Network, Node, Edge } from 'react-vis-network';
 
 const NetworkGraph = (props) => {
     const { data } = props;
-    const { nodesArr, edgesArr } = data;
-    if (nodesArr && edgesArr) {
-        const nodes = nodesArr.map((i,index) =>
-            <Node key={`n${index}`} id={index} label={`${index}`} />
+    const { uniqueArr, edgesArr } = data;
+
+    if (uniqueArr && edgesArr) {
+        const nodes = uniqueArr.map((i,index) =>
+            <Node key={`n${index}`} id={index} label={i.label} />
         );
 
         const edges = edgesArr.map((i, index) =>
