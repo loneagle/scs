@@ -1,27 +1,28 @@
 import React from 'react';
-import { Network, Node, Edge } from 'react-vis-network';
+import Graph from 'vis-react';
 
 const NetworkGraph = (props) => {
     const { data } = props;
     const { uniqueArr, edgesArr } = data;
 
     if (uniqueArr && edgesArr) {
-        const nodes = uniqueArr.map((i,index) =>
-            <Node key={`n${index}`} id={index} label={i.label} />
-        );
+        const graph = {
+            nodes: uniqueArr,
+            edges: edgesArr
+        };
 
-        const edges = edgesArr.map((i, index) =>
-            <Edge key={`e${index}`} id={index} from={i.from} to={i.to}/>
-        );
+        const options = {
+            layout: {
+                hierarchical: true
+            },
+            edges: {
+                color: "#000000"
+            }
+        };
 
-
-        return (
-            <Network>
-                {nodes}
-                {edges}
-            </Network>
-        )
+        return <Graph graph={graph} options={options} />;
     }
+
     return <div>Нових даних поки немає</div>;
 };
 

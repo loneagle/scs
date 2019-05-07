@@ -7,7 +7,8 @@ import CompSys from './CompSys/CompSys';
 class App extends Component {
     state = {
         fileReader: new FileReader(),
-        data: [],
+        dataGraph: [],
+        dataTask: [],
         size: 2,
     };
 
@@ -23,8 +24,12 @@ class App extends Component {
         });
     };
 
-    setData = (e) => {
-        this.setState({data: e})
+    setDataGraph = (e) => {
+        this.setState({ dataGraph: e })
+    };
+
+    setDataTask = (e) => {
+        this.setState({ dataGraph: e })
     };
 
     onSelectFile = e => {
@@ -60,11 +65,7 @@ class App extends Component {
     };
 
     clear = () => {
-        for (let i=0; i<this.state.size; i++) {
-            for (let j=0; j<this.state.size; j++) {
-                document.getElementById(`${i}--${j}`).value = "0";
-            }
-        }
+        Array.prototype.forEach.call(document.getElementsByTagName('input'), el => el.value = '');
     };
 
     render() {
@@ -78,8 +79,8 @@ class App extends Component {
                             clear={this.clear}
                             onSelectFile={this.onSelectFile}
                             saveFile={this.saveFile}
-                            data={this.state.data}
-                            setData={this.setData}
+                            data={this.state.dataGraph}
+                            setData={this.setDataGraph}
                         />
                     )}
                     exact
@@ -91,7 +92,8 @@ class App extends Component {
                             clear={this.clear}
                             onSelectFile={this.onSelectFile}
                             saveFile={this.saveFile}
-                            newData={this.newData}
+                            data={this.state.dataTask}
+                            setData={this.setDataTask}
                         />
                     )}
                     exact

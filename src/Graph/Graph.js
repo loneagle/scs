@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import NetworkGraph from '../NetworkGraph/NetworkGraph';
 
 const Graph = (props) => {
-    const [ graphData, setGraphData ] = useState({});
     const {
         onSelectFile,
         saveFile,
@@ -19,7 +18,7 @@ const Graph = (props) => {
                 <td>
                     <input
                         type="number"
-                        defaultValue={el.from ? el.from : 1}
+                        defaultValue={el.from}
                         min={1}
                         max={data.length}
                         name='from'
@@ -49,24 +48,25 @@ const Graph = (props) => {
 
     const addEdge = () => {
         data.push({});
-        setData([...data]);
+
+        setData(data);
     };
 
     const delEdge = (e) => {
-        const newData = data;
-        newData.splice(e.target.id, 1);
-        setData([...newData]);
+        data.splice(e.target.id, 1);
+
+        setData(data);
     };
 
     const changeData = (e) => {
-        const newData = data;
-
         if (e.target.dataset.from) {
-            newData[e.target.dataset.from].from = e.target.value;
+            data[e.target.dataset.from].from = e.target.value;
         }
         if (e.target.dataset.to) {
-            newData[e.target.dataset.to].to = e.target.value;
+            data[e.target.dataset.to].to = e.target.value;
         }
+
+        setData(data);
     };
 
     const generateData = () => {
@@ -104,7 +104,7 @@ const Graph = (props) => {
            }
         });
 
-        setGraphData({ uniqueArr, edgesArr });
+        return { uniqueArr, edgesArr };
     };
 
     return (
@@ -165,10 +165,10 @@ const Graph = (props) => {
                     </tr>
                 </tbody>
             </table>
-            <h2 onClick={() => generateData()}>Згенерувати</h2>
+            <h2>Згенерований граф</h2>
             <div className="network">
                 <NetworkGraph
-                    data={graphData}
+                    data={generateData()}
                 />
             </div>
         </div>
