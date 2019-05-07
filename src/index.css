@@ -1,0 +1,134 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+header {
+  position: fixed;
+  width: 100%;
+  height: 50px;
+  background-color: #1D1E18;
+  top: 0;
+  vertical-align: middle;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 500;
+}
+
+header > a {
+  font: 18px 'Verdana';
+  color: #5A91CB;
+  text-decoration: none;
+}
+
+body {
+  background-color: azure;
+}
+
+section {
+  padding-top: 60px;
+}
+
+td input {
+  max-width: 30px;
+  padding: 0;
+  text-align: right;
+}
+
+.matType > input {
+  width: 40px;
+}
+
+div > input {
+  margin-left: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.tableOperations {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding: 10px;
+  width: 300px;
+  border: 1px solid black;
+}
+
+.tableOperations > input {
+  margin-left: 0;
+}
+
+.clear {
+  cursor: pointer;
+}
+
+table {
+  border: 1px solid black;
+  background-color: #ABABAB;
+}
+
+.inputData {
+  padding: 30px;
+  border: 1px solid black;
+  width: 40%;
+  margin: 0 5px;
+}
+
+.inputData > div {
+  text-align: left;
+}
+
+.inputData > span {
+  font-size: 20px;
+}
+
+.graph {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.inputTable {
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.inputTable caption{
+  white-space: nowrap;
+}
+
+.network {
+  background-color: #ABABAB;
+  height: 500px;
+}
+
+.fileName, .matType {
+  margin: 5px 0;
+}
+
+.fileName input, .matType input{
+  float: right;
+}
+
+.graph-data {
+  display: flex;
+}
+
+h2 {
+  cursor: pointer;
+}
