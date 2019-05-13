@@ -5,10 +5,10 @@ const Header = () => {
     return (
         <header>
             <Link to="/graph">
-                Граф
+                Граф КС
             </Link>
             <Link to="/comsys">
-                Граф КС
+                Граф задачі
             </Link>
             <Link to="modeling">
                 Моделювання

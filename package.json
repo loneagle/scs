@@ -18,6 +18,11 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/loneagle/scs/issues"
+  },
+  "homepage": "https://github.com/loneagle/scs/",
   "browserslist": [
     ">0.2%",
     "not dead",

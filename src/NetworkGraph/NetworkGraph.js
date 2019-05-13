@@ -3,7 +3,7 @@ import Graph from 'vis-react';
 
 const NetworkGraph = (props) => {
     const { data } = props;
-    const { uniqueArr, edgesArr } = data;
+    const { uniqueArr, edgesArr, ks } = data;
 
     if (uniqueArr && edgesArr) {
         const graph = {
@@ -13,11 +13,14 @@ const NetworkGraph = (props) => {
 
         const options = {
             layout: {
-                hierarchical: true
+                hierarchical: false
             },
             edges: {
-                color: "#000000"
-            }
+                color: "#000000",
+                arrows: {
+                    to: { enabled: !ks }
+                }
+            },
         };
 
         return <Graph graph={graph} options={options} />;

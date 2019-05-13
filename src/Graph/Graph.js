@@ -72,6 +72,7 @@ const Graph = (props) => {
     const generateData = () => {
         const nodesArr = [];
         const edgesArr = [];
+        const ks = true;
 
         data.forEach((el) => {
             (el.from || el.from === 0) && nodesArr.push({
@@ -104,7 +105,7 @@ const Graph = (props) => {
            }
         });
 
-        return { uniqueArr, edgesArr };
+        return { uniqueArr, edgesArr, ks };
     };
 
     return (
@@ -168,7 +169,7 @@ const Graph = (props) => {
             <h2>Згенерований граф</h2>
             <div className="network">
                 <NetworkGraph
-                    data={generateData()}
+                    data={generateData(data)}
                 />
             </div>
         </div>

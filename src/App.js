@@ -12,18 +12,6 @@ class App extends Component {
         size: 2,
     };
 
-    fileRead = () => {
-        const content = this.state.fileReader.result;
-        const loadData = JSON.parse(content);
-        document.getElementById('name').value = loadData.name;
-        document.getElementById('size').value = loadData.data.length;
-        loadData.data.forEach((arr, i) => {
-            arr.forEach((el,j) => {
-                document.getElementById(`${i}--${j}`).value = el;
-            });
-        });
-    };
-
     setDataGraph = (e) => {
         this.setState({ dataGraph: e })
     };
@@ -40,6 +28,16 @@ class App extends Component {
         this.state.fileReader.readAsText(file);
     };
 
+    fileRead = () => {
+        const content = this.state.fileReader.result;
+        const loadData = JSON.parse(content);
+        document.getElementById('name').value = loadData.name;
+        this.setState({
+            dataGraph: loadData.dataGraph,
+            dataTask: loadData.dataTask
+        });
+    };
+
     saveFile = (size) => {
         const blob = new Blob([JSON.stringify(this.newData(size))], { type: 'text/plain' });
         const anchor = document.getElementById("save");
@@ -49,17 +47,12 @@ class App extends Component {
         anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
     };
 
-    newData = (size) => {
-        const newData = { name: "", data: [] };
-
-        for (let i=0; i<size; i++) {
-            newData.data.push([]);
-            for (let j=0; j<size; j++) {
-                newData.data[i].push(document.getElementById(`${i}--${j}`).value)
-            }
-        }
-
-        newData.name = document.getElementById('name').value;
+    newData = () => {
+        const newData = {
+            name: document.getElementById('name').value || "nonamed",
+            dataTask: this.state.dataTask,
+            dataGraph: this.state.dataGraph,
+        };
 
         return newData;
     };

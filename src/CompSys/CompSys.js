@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React  from 'react';
 import NetworkGraph from '../NetworkGraph/NetworkGraph';
 
 const CompSys = (props) => {
@@ -13,12 +13,12 @@ const CompSys = (props) => {
     const sysEl = (data) => (
         data && data.map((el, index) =>
             <tr key={index}
-                onChange={changeData}
             >
                 <td>
                     <input
                         type="number"
-                        defaultValue={el.from ? el.from : 1}
+                        value={el.from}
+                        onChange={changeData}
                         min={1}
                         max={data.length}
                         name='from'
@@ -28,8 +28,9 @@ const CompSys = (props) => {
                 <td>
                     <input
                         type="text"
-                        defaultValue={el.to}
+                        value={el.to}
                         min={1}
+                        onChange={changeData}
                         max={data.length}
                         data-to={index}
                     />
@@ -37,8 +38,9 @@ const CompSys = (props) => {
                 <td>
                     <input
                         type="number"
-                        defaultValue={el.weight}
+                        value={el.weight}
                         min={1}
+                        onChange={changeData}
                         data-weight={index}
                     />
                 </td>
@@ -80,9 +82,10 @@ const CompSys = (props) => {
         setData(data);
     };
 
-    const generateData = () => {
+    const generateData = (data) => {
         const nodesArr = [];
         const edgesArr = [];
+        const ks = false;
 
         data.forEach((el) => {
             (el.from || el.from === 0) && nodesArr.push({
@@ -116,7 +119,7 @@ const CompSys = (props) => {
             }
         });
 
-        return { uniqueArr, edgesArr };
+        return { uniqueArr, edgesArr, ks };
     };
 
     return (
@@ -183,7 +186,7 @@ const CompSys = (props) => {
             <h2>Згенерований граф</h2>
             <div className="network">
                 <NetworkGraph
-                    data={generateData()}
+                    data={generateData(data)}
                 />
             </div>
         </div>
