@@ -8,7 +8,8 @@ const Graph = (props) => {
         clear,
         data,
         setData,
-    } = props;
+        generateData,
+} = props;
 
     const sysEl = (data) => (
         data && data.map((el, index) =>
@@ -20,7 +21,6 @@ const Graph = (props) => {
                         type="number"
                         defaultValue={el.from}
                         min={1}
-                        max={data.length}
                         name='from'
                         data-from={index}
                     />
@@ -30,7 +30,6 @@ const Graph = (props) => {
                         type="text"
                         defaultValue={el.to}
                         min={1}
-                        max={data.length}
                         data-to={index}
                     />
                 </td>
@@ -69,44 +68,104 @@ const Graph = (props) => {
         setData(data);
     };
 
-    const generateData = () => {
-        const nodesArr = [];
-        const edgesArr = [];
-        const ks = true;
-
-        data.forEach((el) => {
-            (el.from || el.from === 0) && nodesArr.push({
-                id: el.from,
-                label: el.from,
-            });
-
-            el.to && el.to.trim().split(',').forEach((to) => {
-                nodesArr.push({
-                    id: to,
-                    label: to,
-                });
-                edgesArr.push({
-                    from: parseInt(el.from, 10) - 1,
-                    to: parseInt(to, 10) - 1
-                });
+    const transformToMatrix = (data) => {
+        const matrix = [];
+        const { uniqueArr, edgesArr } = data;
+        uniqueArr.forEach((q,index) => {
+            matrix.push([]);
+            q.index = index;
+            uniqueArr.forEach(() => {
+                matrix[index].push(0);
             });
         });
 
-        const uniqueId = [];
-        const uniqueArr = [];
+        edgesArr.forEach((edge) => {
+            let Index = 0,
+                Jndex = 0;
+            uniqueArr.forEach((el) => {
+                if (edge.from === el.id) Index = el.index;
+                if (edge.to === el.id) Jndex = el.index;
+            });
 
-        nodesArr.forEach((el) => {
-           if (uniqueId.indexOf(el.id) === -1) {
-               uniqueId.push(el.id);
-               uniqueArr.push({
-                   id: parseInt(el.id - 1, 10),
-                   label: (parseInt(el.label,10)).toString()
-               });
-           }
+            matrix[Index][Jndex] = 1;
+            matrix[Jndex][Index] = 1;
         });
 
-        return { uniqueArr, edgesArr, ks };
+        return matrix;
     };
+
+    const checkLinkConnectionFull = (matrix) => {
+        let count = true;
+        matrix.forEach((row) => {
+            row.forEach((el) => {
+                if (el === Infinity) count = false;
+            })
+        });
+
+        return count;
+    };
+
+    function getPathes(matrix) {
+        const pathes = [];
+        for (let i = 0; i < matrix.length; i++) {
+            pathes.push(getShortestPath(matrix, i));
+        }
+        return pathes;
+    }
+
+    function getShortestPath(ajacencyMatrix, startNode) {
+        const pathWeight = [];
+        for (let i = 0; i < ajacencyMatrix.length; i++) {
+            pathWeight[i] = Infinity;
+        }
+        pathWeight[startNode] = 0;
+
+        const queue = [startNode];
+        let currentNode;
+
+        while (queue.length !== 0) {
+            currentNode = queue.shift();
+
+            const currentConnected = ajacencyMatrix[currentNode];
+            const neighborIndexes = [];
+            let index = currentConnected.indexOf(1);
+            while (index !== -1) {
+                neighborIndexes.push(index);
+                index = currentConnected.indexOf(1, index + 1);
+            }
+
+            for (let j = 0; j < neighborIndexes.length; j++) {
+                if (pathWeight[neighborIndexes[j]] === Infinity) {
+                    pathWeight[neighborIndexes[j]] = pathWeight[currentNode] + 1;
+                    queue.push(neighborIndexes[j]);
+                }
+            }
+        }
+        return pathWeight;
+    }
+
+    const checkLinkConnection = (data) => {
+        const { uniqueArr, edgesArr } = data;
+        uniqueArr.forEach((el) => {
+            let count = 0;
+            edgesArr.forEach((edge) => {
+                if (edge.from === el.id) {
+                    count++;
+                }
+                if (edge.to === el.id) {
+                    count++;
+                }
+            });
+
+            el.count = count;
+        });
+
+        return uniqueArr.filter(el => el.count === 0);
+    };
+
+    const netWorkData = generateData(data, true);
+    const linkConn = checkLinkConnection(netWorkData);
+    const linkConnFull = checkLinkConnectionFull(getPathes(transformToMatrix(netWorkData)));
 
     return (
         <div className="graph">
@@ -166,10 +225,18 @@ const Graph = (props) => {
                     </tr>
                 </tbody>
             </table>
+            {!(linkConnFull) &&
+                <div className="errors">
+                    <span className="error-title">Помилка зв'язності процесорів</span>
+                    <ul>
+                        {linkConn.map(el => <li key={`unique-${el.id}`}>{el.label}</li>)}
+                    </ul>
+                </div>
+            }
             <h2>Згенерований граф</h2>
             <div className="network">
                 <NetworkGraph
-                    data={generateData(data)}
+                    data={netWorkData}
                 />
             </div>
         </div>

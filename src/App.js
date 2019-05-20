@@ -17,7 +17,7 @@ class App extends Component {
     };
 
     setDataTask = (e) => {
-        this.setState({ dataGraph: e })
+        this.setState({ dataTask: e })
     };
 
     onSelectFile = e => {
@@ -48,17 +48,79 @@ class App extends Component {
     };
 
     newData = () => {
-        const newData = {
+        return {
             name: document.getElementById('name').value || "nonamed",
             dataTask: this.state.dataTask,
             dataGraph: this.state.dataGraph,
         };
+    };
 
-        return newData;
+    generateData = (data, ks) => {
+        const nodesArr = [];
+        const edgesArr = [];
+
+        data.forEach((el) => {
+            (el.from || el.from === 0) && nodesArr.push({
+                id: el.from,
+                label: el.from,
+                edgeweight: el.edgeweight,
+            });
+
+            el.to && el.to.trim().split(',').forEach((to) => {
+                nodesArr.push({
+                    id: to,
+                    label: to,
+                });
+                (ks) ? (
+                    edgesArr.push({
+                        from: parseInt(el.from, 10) - 1,
+                        to: parseInt(to, 10) - 1,
+                    })
+                ) : (
+                    edgesArr.push({
+                        from: parseInt(el.from, 10) - 1,
+                        to: parseInt(to, 10) - 1,
+                        label: el.weight
+                    })
+                );
+            });
+        });
+
+        const uniqueId = [];
+        const uniqueArr = [];
+
+        nodesArr.forEach((el) => {
+            if (ks) {
+                if (uniqueId.indexOf(el.id) === -1) {
+                    uniqueId.push(el.id);
+                    uniqueArr.push({
+                        id: parseInt(el.id - 1, 10),
+                        label: el.label
+                    });
+                }
+            }
+            else {
+                if (uniqueId.indexOf(el.id) === -1 && el.edgeweight) {
+                    uniqueArr.push({
+                        id: parseInt(el.id - 1, 10),
+                        label: `${el.edgeweight}/${el.label}`,
+                    });
+                }
+            }
+        });
+
+        return { uniqueArr, edgesArr, ks };
     };
 
     clear = () => {
         Array.prototype.forEach.call(document.getElementsByTagName('input'), el => el.value = '');
+        const tbody = document.querySelector("tbody");
+        let lastChild = tbody.firstElementChild;
+        while (tbody.childNodes.length > 2) {
+            tbody.removeChild(lastChild);
+            lastChild = tbody.firstElementChild;
+        }
+        this.setState({dataGraph: [{}], dataTask: [{}]});
     };
 
     render() {
@@ -74,6 +136,7 @@ class App extends Component {
                             saveFile={this.saveFile}
                             data={this.state.dataGraph}
                             setData={this.setDataGraph}
+                            generateData={this.generateData}
                         />
                     )}
                     exact
@@ -87,6 +150,7 @@ class App extends Component {
                             saveFile={this.saveFile}
                             data={this.state.dataTask}
                             setData={this.setDataTask}
+                            generateData={this.generateData}
                         />
                     )}
                     exact

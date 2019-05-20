@@ -8,6 +8,7 @@ const CompSys = (props) => {
         clear,
         data,
         setData,
+        generateData
     } = props;
 
     const sysEl = (data) => (
@@ -20,7 +21,6 @@ const CompSys = (props) => {
                         value={el.from}
                         onChange={changeData}
                         min={1}
-                        max={data.length}
                         name='from'
                         data-from={index}
                     />
@@ -31,7 +31,6 @@ const CompSys = (props) => {
                         value={el.to}
                         min={1}
                         onChange={changeData}
-                        max={data.length}
                         data-to={index}
                     />
                 </td>
@@ -42,6 +41,15 @@ const CompSys = (props) => {
                         min={1}
                         onChange={changeData}
                         data-weight={index}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="number"
+                        value={el.edgeweight}
+                        min={1}
+                        onChange={changeData}
+                        data-edgeweight={index}
                     />
                 </td>
                 <td>
@@ -78,49 +86,43 @@ const CompSys = (props) => {
         if (e.target.dataset.weight) {
             data[e.target.dataset.weight].weight = e.target.value;
         }
+        if (e.target.dataset.edgeweight) {
+            data[e.target.dataset.edgeweight].edgeweight = e.target.value;
+        }
 
         setData(data);
     };
 
-    const generateData = (data) => {
-        const nodesArr = [];
-        const edgesArr = [];
-        const ks = false;
+    function getCycle(edgesArr) {
+        if (edgesArr) {
+            let graph = [];
+            (graph = edgesArr.map(item => {
+                const map = item.to ? item.to.split(',') : [];
+                const from = item.from;
+                let obj = {};
+                return obj[from] = map
+            }));
 
-        data.forEach((el) => {
-            (el.from || el.from === 0) && nodesArr.push({
-                id: el.from,
-                label: el.from,
-            });
+            if (graph && graph.length) {
+                graph = Object.assign(...Object.keys(graph).map( node =>
+                    ({ [node]: graph[node].map(String) })
+                ));
 
-            el.to && el.to.trim().split(',').forEach((to) => {
-                nodesArr.push({
-                    id: to,
-                    label: to,
-                });
-                edgesArr.push({
-                    from: parseInt(el.from, 10) - 1,
-                    to: parseInt(to, 10) - 1,
-                    label: el.weight
-                });
-            });
-        });
-
-        const uniqueId = [];
-        const uniqueArr = [];
-
-        nodesArr.forEach((el) => {
-            if (uniqueId.indexOf(el.id) === -1) {
-                uniqueId.push(el.id);
-                uniqueArr.push({
-                    id: parseInt(el.id - 1, 10),
-                    label: (parseInt(el.label,10)).toString()
-                });
+                let queue = Object.keys(graph).map( node => [node] );
+                while (queue.length) {
+                    const batch = [];
+                    for (const path of queue) {
+                        const parents = graph[path[0]] || [];
+                        for (const node of parents) {
+                            if (node === path[path.length-1]) return [node, ...path];
+                            batch.push([node, ...path]);
+                        }
+                    }
+                    queue = batch;
+                }
             }
-        });
-
-        return { uniqueArr, edgesArr, ks };
-    };
+        } return false;
+    }
 
     return (
         <div className="graph">
@@ -154,6 +156,11 @@ const CompSys = (props) => {
                     </span>
                 </div>
             </div>
+            {(getCycle(data)) &&
+            <div className="errors">
+                <span className="error-title">Граф задач містить цикл</span>
+            </div>
+            }
             <table>
                 <thead>
                 <tr>
@@ -164,7 +171,10 @@ const CompSys = (props) => {
                         <span>До</span>
                     </th>
                     <th>
-                        <span>Вага</span>
+                        <span>Вага з'єднання</span>
+                    </th>
+                    <th>
+                        <span>Вага ядра</span>
                     </th>
                     <th>
                         <span>Видалити</span>
@@ -186,7 +196,7 @@ const CompSys = (props) => {
             <h2>Згенерований граф</h2>
             <div className="network">
                 <NetworkGraph
-                    data={generateData(data)}
+                    data={generateData(data,false)}
                 />
             </div>
         </div>
