@@ -9,6 +9,8 @@ const Graph = (props) => {
         data,
         setData,
         generateData,
+        transformToMatrix,
+        getPathes,
 } = props;
 
     const sysEl = (data) => (
@@ -68,32 +70,6 @@ const Graph = (props) => {
         setData(data);
     };
 
-    const transformToMatrix = (data) => {
-        const matrix = [];
-        const { uniqueArr, edgesArr } = data;
-        uniqueArr.forEach((q,index) => {
-            matrix.push([]);
-            q.index = index;
-            uniqueArr.forEach(() => {
-                matrix[index].push(0);
-            });
-        });
-
-        edgesArr.forEach((edge) => {
-            let Index = 0,
-                Jndex = 0;
-            uniqueArr.forEach((el) => {
-                if (edge.from === el.id) Index = el.index;
-                if (edge.to === el.id) Jndex = el.index;
-            });
-
-            matrix[Index][Jndex] = 1;
-            matrix[Jndex][Index] = 1;
-        });
-
-        return matrix;
-    };
-
     const checkLinkConnectionFull = (matrix) => {
         let count = true;
         matrix.forEach((row) => {
@@ -104,45 +80,6 @@ const Graph = (props) => {
 
         return count;
     };
-
-    function getPathes(matrix) {
-        const pathes = [];
-        for (let i = 0; i < matrix.length; i++) {
-            pathes.push(getShortestPath(matrix, i));
-        }
-        return pathes;
-    }
-
-    function getShortestPath(ajacencyMatrix, startNode) {
-        const pathWeight = [];
-        for (let i = 0; i < ajacencyMatrix.length; i++) {
-            pathWeight[i] = Infinity;
-        }
-        pathWeight[startNode] = 0;
-
-        const queue = [startNode];
-        let currentNode;
-
-        while (queue.length !== 0) {
-            currentNode = queue.shift();
-
-            const currentConnected = ajacencyMatrix[currentNode];
-            const neighborIndexes = [];
-            let index = currentConnected.indexOf(1);
-            while (index !== -1) {
-                neighborIndexes.push(index);
-                index = currentConnected.indexOf(1, index + 1);
-            }
-
-            for (let j = 0; j < neighborIndexes.length; j++) {
-                if (pathWeight[neighborIndexes[j]] === Infinity) {
-                    pathWeight[neighborIndexes[j]] = pathWeight[currentNode] + 1;
-                    queue.push(neighborIndexes[j]);
-                }
-            }
-        }
-        return pathWeight;
-    }
 
     const checkLinkConnection = (data) => {
         const { uniqueArr, edgesArr } = data;

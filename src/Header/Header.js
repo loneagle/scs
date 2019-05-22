@@ -10,7 +10,7 @@ const Header = () => {
             <Link to="/comsys">
                 Граф задачі
             </Link>
-            <Link to="modeling">
+            <Link to="/modeling">
                 Моделювання
             </Link>
             <Link to="/statistics">

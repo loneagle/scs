@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from './Header/Header';
 import Graph from './Graph/Graph';
 import CompSys from './CompSys/CompSys';
+import Queues from './Queues/Queues';
 
 class App extends Component {
     state = {
         fileReader: new FileReader(),
         dataGraph: [],
         dataTask: [],
+        error: false,
         size: 2,
     };
 
@@ -105,12 +107,84 @@ class App extends Component {
                         id: parseInt(el.id - 1, 10),
                         label: `${el.edgeweight}/${el.label}`,
                     });
+                    uniqueId.push(el.id);
                 }
             }
         });
 
+        console.log(uniqueArr, edgesArr);
         return { uniqueArr, edgesArr, ks };
     };
+
+    transformToMatrix = (data) => {
+        const matrix = [];
+        const { uniqueArr = [], edgesArr = [], ks } = data;
+        uniqueArr.forEach((q,index) => {
+            matrix.push([]);
+            q.index = index;
+            uniqueArr.forEach(() => {
+                matrix[index].push(0);
+            });
+        });
+
+        edgesArr.forEach((edge) => {
+            let Index = 0,
+                Jndex = 0;
+            console.log(edge);
+            uniqueArr.forEach((el) => {
+                console.log(el, edge, "check-------------");
+                if (edge.from === el.id) Index = el.index;
+                if (edge.to === el.id) Jndex = el.index;
+            });
+
+            matrix[Index][Jndex] = 1;
+            if (ks) {
+                matrix[Jndex][Index] = 1;
+            }
+        });
+        console.log(matrix, "dscsdcs");
+        return matrix;
+    };
+
+    getPathes(matrix) {
+        const pathes = [];
+
+        for (let i = 0; i < matrix.length; i++) {
+            pathes.push(getShortestPath(matrix, i));
+        }
+        return pathes;
+
+        function getShortestPath(ajacencyMatrix, startNode) {
+            const pathWeight = [];
+            for (let i = 0; i < ajacencyMatrix.length; i++) {
+                pathWeight[i] = Infinity;
+            }
+            pathWeight[startNode] = 0;
+
+            const queue = [startNode];
+            let currentNode;
+
+            while (queue.length !== 0) {
+                currentNode = queue.shift();
+
+                const currentConnected = ajacencyMatrix[currentNode];
+                const neighborIndexes = [];
+                let index = currentConnected.indexOf(1);
+                while (index !== -1) {
+                    neighborIndexes.push(index);
+                    index = currentConnected.indexOf(1, index + 1);
+                }
+
+                for (let j = 0; j < neighborIndexes.length; j++) {
+                    if (pathWeight[neighborIndexes[j]] === Infinity) {
+                        pathWeight[neighborIndexes[j]] = pathWeight[currentNode] + 1;
+                        queue.push(neighborIndexes[j]);
+                    }
+                }
+            }
+            return pathWeight;
+        }
+    }
 
     clear = () => {
         Array.prototype.forEach.call(document.getElementsByTagName('input'), el => el.value = '');
@@ -137,6 +211,8 @@ class App extends Component {
                             data={this.state.dataGraph}
                             setData={this.setDataGraph}
                             generateData={this.generateData}
+                            getPathes={this.getPathes}
+                            transformToMatrix={this.transformToMatrix}
                         />
                     )}
                     exact
@@ -151,6 +227,21 @@ class App extends Component {
                             data={this.state.dataTask}
                             setData={this.setDataTask}
                             generateData={this.generateData}
+                            getPathes={this.getPathes}
+                        />
+                    )}
+                    exact
+                />
+                <Route
+                    path="/modeling"
+                    component={() => (
+                        <Queues
+                            dataTask={this.state.dataTask}
+                            dataGraph={this.state.dataGraph}
+                            error={this.state.error}
+                            transformToMatrix={this.transformToMatrix}
+                            generateData={this.generateData}
+                            getPathes={this.getPathes}
                         />
                     )}
                     exact
