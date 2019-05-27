@@ -19,7 +19,6 @@ const Queues = (props) => {
                 last.push(index);
             }
         });
-        console.log(matrix);
         for (let i = 0; i < matrix.length; i++) {
             let count = 0;
             for (let j=0; j < matrix.length; j++) {
@@ -170,9 +169,10 @@ const Queues = (props) => {
 
         const { edgesArr, uniqueArr } = generateData(dataTask);
         const { parents } = parentsAndLasts(dataTask);
+        console.log(parents);
         const graph = edgesArr.map((el) => [el.to, el.from]);
         const result  = [];
-        console.log(parents);
+
         for (let i = matrix.length - 1; i >= 0 ; i--) {
             let max = 0;
             parents.forEach((el) => {
@@ -199,7 +199,7 @@ const Queues = (props) => {
         }
 
         result.sort(compareSort);
-        console.log(result, uniqueArr);
+
         const newResult = result.map((el) => {
             let checkVal = uniqueArr.filter(uel => uel.id === el.i);
             if (checkVal.length) {

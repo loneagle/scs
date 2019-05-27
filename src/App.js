@@ -90,13 +90,14 @@ class App extends Component {
 
         const uniqueId = [];
         const uniqueArr = [];
+        let i = 0;
 
         nodesArr.forEach((el) => {
             if (ks) {
                 if (uniqueId.indexOf(el.id) === -1) {
                     uniqueId.push(el.id);
                     uniqueArr.push({
-                        id: parseInt(el.id - 1, 10),
+                        id: i++,
                         label: el.label
                     });
                 }
@@ -104,7 +105,7 @@ class App extends Component {
             else {
                 if (uniqueId.indexOf(el.id) === -1 && el.edgeweight) {
                     uniqueArr.push({
-                        id: parseInt(el.id - 1, 10),
+                        id: i++,
                         label: `${el.edgeweight}/${el.label}`,
                     });
                     uniqueId.push(el.id);
@@ -112,13 +113,16 @@ class App extends Component {
             }
         });
 
-        console.log(uniqueArr, edgesArr);
+        // edgesArr.forEach()
+
+        console.log(uniqueArr, edgesArr, "generateData");
         return { uniqueArr, edgesArr, ks };
     };
 
     transformToMatrix = (data) => {
         const matrix = [];
         const { uniqueArr = [], edgesArr = [], ks } = data;
+
         uniqueArr.forEach((q,index) => {
             matrix.push([]);
             q.index = index;
@@ -130,11 +134,9 @@ class App extends Component {
         edgesArr.forEach((edge) => {
             let Index = 0,
                 Jndex = 0;
-            console.log(edge);
             uniqueArr.forEach((el) => {
-                console.log(el, edge, "check-------------");
-                if (edge.from === el.id) Index = el.index;
-                if (edge.to === el.id) Jndex = el.index;
+                if (edge.from === el.label.split('/').pop() - 1) Index = el.id;
+                if (edge.to === el.label.split('/').pop() -1) Jndex = el.id;
             });
 
             matrix[Index][Jndex] = 1;
@@ -142,7 +144,7 @@ class App extends Component {
                 matrix[Jndex][Index] = 1;
             }
         });
-        console.log(matrix, "dscsdcs");
+        console.log(matrix, "matrix");
         return matrix;
     };
 
