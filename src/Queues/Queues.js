@@ -181,17 +181,13 @@ const Queues = (props) => {
                     from: i,
                     to: el
                 });
-
-                pathsArr.forEach((el) => {
+                pathsArr.forEach((pel) => {
                     let sum = 0;
-                    for (let j = 0; j < el.length - 1; j++) {
-                        for (let k = 0; k < edgesArr.length; k++) {
-                            if ((edgesArr[k].to === el[j]) && (edgesArr[k].from === el[j+1])) {
-                                sum += parseInt(edgesArr[i].label, 10);
-                                max = max < sum ? sum : max;
-                            }
-                        }
-                    }
+                    pel.forEach((pathItem)=> {
+                        const fel = uniqueArr.filter((fel) => fel.id === pathItem);
+                        sum += parseInt(fel[0].label.split('/')[0], 10);
+                    });
+                    max = max < sum ? sum : max;
                 });
             });
             if (max !== 0 || parents.includes(i))

@@ -93,35 +93,56 @@ const CompSys = (props) => {
         setData(data);
     };
 
-    function getCycle(edgesArr) {
-        if (edgesArr) {
-            let graph = [];
-            (graph = edgesArr.map(item => {
-                const map = item.to ? item.to.split(',') : [];
-                const from = item.from;
-                let obj = {};
-                return obj[from] = map
-            }));
+    function getCycle(data) {
+        const { edgesArr } = data,
+            elId = [], qedgesArr = [];
+        for (let i=0; i<edgesArr.length; i++) {
+            qedgesArr.push(edgesArr[i]);
+        }
 
-            if (graph && graph.length) {
-                graph = Object.assign(...Object.keys(graph).map( node =>
-                    ({ [node]: graph[node].map(String) })
-                ));
-
-                let queue = Object.keys(graph).map( node => [node] );
-                while (queue.length) {
-                    const batch = [];
-                    for (const path of queue) {
-                        const parents = graph[path[0]] || [];
-                        for (const node of parents) {
-                            if (node === path[path.length-1]) return [node, ...path];
-                            batch.push([node, ...path]);
+        let newEdgesArr = [];
+        if (qedgesArr.length) {
+            qedgesArr.forEach((el) => {
+                if (elId.indexOf(el.from) === -1) {
+                    newEdgesArr.push(el);
+                    elId.push(el.from);
+                } else {
+                    newEdgesArr.forEach((newEl) => {
+                        if (newEl.from === el.from) {
+                            let nw = (newEl.to.length) ? newEl.to : [newEl.to];
+                            nw.push(el.to);
+                            newEl.to = nw;
                         }
-                    }
-                    queue = batch;
+                    })
                 }
+            });
+
+            let graph = {};
+
+            newEdgesArr.forEach((el) => {
+                graph[el.from] = (typeof  el.to === "number") ? [el.to] : el.to;
+            });
+
+            let queue = Object.keys(graph).map( node => [node] );
+            while (queue.length) {
+                const batch = [];
+                for (const path of queue) {
+                    console.log(path, "path");
+                    const parents = graph[path[0]] || [];
+                    console.log(parents, "parents");
+                    for (const node of parents) {
+                        if (node === path[path.length-1]) {
+                            alert('Наявна помилка');
+                            return true;
+                        }
+                        batch.push([node, ...path]);
+                    }
+                }
+
+                queue = batch;
             }
-        } return false;
+        }
+        return false;
     }
 
     return (
@@ -156,11 +177,7 @@ const CompSys = (props) => {
                     </span>
                 </div>
             </div>
-            {(getCycle(data)) &&
-            <div className="errors">
-                <span className="error-title">Граф задач містить цикл</span>
-            </div>
-            }
+            <button onClick={() => getCycle(generateData(data,false)) }>Перевірити</button>
             <table>
                 <thead>
                 <tr>

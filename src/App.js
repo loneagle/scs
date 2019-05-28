@@ -59,7 +59,7 @@ class App extends Component {
 
     generateData = (data, ks) => {
         const nodesArr = [];
-        const edgesArr = [];
+        let edgesArr = [];
 
         data.forEach((el) => {
             (el.from || el.from === 0) && nodesArr.push({
@@ -75,13 +75,13 @@ class App extends Component {
                 });
                 (ks) ? (
                     edgesArr.push({
-                        from: parseInt(el.from, 10) - 1,
-                        to: parseInt(to, 10) - 1,
+                        from: el.from,
+                        to: to,
                     })
                 ) : (
                     edgesArr.push({
-                        from: parseInt(el.from, 10) - 1,
-                        to: parseInt(to, 10) - 1,
+                        from: el.from,
+                        to: to,
                         label: el.weight
                     })
                 );
@@ -113,9 +113,20 @@ class App extends Component {
             }
         });
 
-        // edgesArr.forEach()
+        const newEdgesArr = [];
+        edgesArr.forEach((edge) => {
+            let Index = 0,
+                Jndex = 0;
+            uniqueArr.forEach((el) => {
+                if (edge.from === el.label.split('/').pop()) Index = el.id;
+                if (edge.to === el.label.split('/').pop()) Jndex = el.id;
+            });
 
-        console.log(uniqueArr, edgesArr, "generateData");
+            newEdgesArr.push({from: Index, to: Jndex, label: edge.label})
+        });
+
+        edgesArr = newEdgesArr;
+
         return { uniqueArr, edgesArr, ks };
     };
 
@@ -132,19 +143,12 @@ class App extends Component {
         });
 
         edgesArr.forEach((edge) => {
-            let Index = 0,
-                Jndex = 0;
-            uniqueArr.forEach((el) => {
-                if (edge.from === el.label.split('/').pop() - 1) Index = el.id;
-                if (edge.to === el.label.split('/').pop() -1) Jndex = el.id;
-            });
-
-            matrix[Index][Jndex] = 1;
+            matrix[edge.from][edge.to] = 1;
             if (ks) {
-                matrix[Jndex][Index] = 1;
+                matrix[edge.to][edge.from] = 1;
             }
         });
-        console.log(matrix, "matrix");
+
         return matrix;
     };
 
