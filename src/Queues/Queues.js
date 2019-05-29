@@ -190,9 +190,15 @@ const Queues = (props) => {
                     max = max < sum ? sum : max;
                 });
             });
-            if (max !== 0 || parents.includes(i))
+            if (max !== 0)
                 result.push({ i, max });
         }
+        parents.forEach((el) => {
+            const k = uniqueArr.filter((fel) => fel.id === el);
+            const i = k[0].id;
+            const max = parseInt(k[0].label.split('/')[0], 10);
+            result.push({ i, max });
+        });
 
         result.sort(compareSort);
 

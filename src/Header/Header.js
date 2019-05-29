@@ -11,16 +11,13 @@ const Header = () => {
                 Граф задачі
             </Link>
             <Link to="/modeling">
-                Моделювання
+                Черги
             </Link>
-            <Link to="/statistics">
-                Статистика
+            <Link to="/generation">
+                Генерація
             </Link>
-            <Link to="/help">
-                Допомога
-            </Link>
-            <Link to="/">
-                Вихід
+            <Link to="/planning">
+                Планувальник
             </Link>
         </header>
     );
