@@ -234,6 +234,7 @@ class App extends Component {
                             setData={this.setDataTask}
                             generateData={this.generateData}
                             getPathes={this.getPathes}
+                            transformToMatrix={this.transformToMatrix}
                         />
                     )}
                     exact
