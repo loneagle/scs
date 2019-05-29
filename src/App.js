@@ -4,6 +4,7 @@ import Header from './Header/Header';
 import Graph from './Graph/Graph';
 import CompSys from './CompSys/CompSys';
 import Queues from './Queues/Queues';
+import Generator from "./Generator/Generator";
 
 class App extends Component {
     state = {
@@ -239,7 +240,6 @@ class App extends Component {
                     )}
                     exact
                 />
-
                 <Route
                     path="/modeling"
                     component={() => (
@@ -247,6 +247,17 @@ class App extends Component {
                             dataTask={this.state.dataTask}
                             dataGraph={this.state.dataGraph}
                             error={this.state.error}
+                            transformToMatrix={this.transformToMatrix}
+                            generateData={this.generateData}
+                            getPathes={this.getPathes}
+                        />
+                    )}
+                    exact
+                />
+                <Route
+                    path="/generation"
+                    component={() => (
+                        <Generator
                             transformToMatrix={this.transformToMatrix}
                             generateData={this.generateData}
                             getPathes={this.getPathes}
