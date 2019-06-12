@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import NetworkGraph from "../NetworkGraph/NetworkGraph";
 import GanttDiagram from "../NetworkGraph/GanttDiagram";
+import Timeline from 'react-visjs-timeline';
 
 const Planning = (props) => {
     const {

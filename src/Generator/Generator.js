@@ -38,10 +38,11 @@ const Generator = (props) => {
         const startEdge = Math.floor(Math.random() * (edgesArr.length));
         const finishEdge = Math.floor(Math.random() * (edgesArr.length));
 
-        return  { from: startEdge, to: finishEdge, label: `${Math.floor(Math.random() * (+getValues().maxEdgeWeight - +getValues().minEdgeWeight)) + +getValues().minEdgeWeight}`};
+        return  { from: startEdge, to: finishEdge, label: `${Math.floor(Math.random() * (+getValues().maxNodeWeight - +getValues().minNodeWeight)) + +getValues().minNodeWeight}`};
     };
 
     const getSumOfLinkWeights = (sum, cor) => {
+        console.log(((sum * (1 - cor)) / cor), sum);
         return (sum*(1 - cor))/cor;
     };
 
@@ -49,7 +50,7 @@ const Generator = (props) => {
         const uniqueArr = genEdgeWithWeight(getValues().edgesNumber, getValues().minEdgeWeight, getValues().maxEdgeWeight);
         let edgesArr = [];
         let sumNodes = getSumOfLinkWeights(getResWeight(uniqueArr), getValues().correlationNumber);
-
+        let countErr = 0;
         while (sumNodes > 0) {
             const newLink = setNewLink(uniqueArr);
             let count = 0;
@@ -67,20 +68,20 @@ const Generator = (props) => {
                     edgesArr: edgesArr,
                     ks: false,
                 };
-
+                console.log("beforeIF", edgesArr);
+                if (countErr>1000) break;
                 if (!getCycle(data) && (data.edgesArr.length > 0)) {
-                    console.debug("CYCLE");
                     edgesArr.pop();
+                    countErr++;
                 } else {
                     sumNodes = sumNodes - (+newLink.label);
+                    console.log(sumNodes);
                 }
-                sumNodes--;
             }
         }
         setData({ uniqueArr, edgesArr});
     };
 
-    console.log(data);
 
     return (
         <div className="generator">
