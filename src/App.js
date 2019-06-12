@@ -4,6 +4,7 @@ import Header from './Header/Header';
 import Graph from './Graph/Graph';
 import CompSys from './CompSys/CompSys';
 import Queues from './Queues/Queues';
+import Generator from "./Generator/Generator";
 
 class App extends Component {
     state = {
@@ -203,6 +204,56 @@ class App extends Component {
         this.setState({dataGraph: [{}], dataTask: [{}]});
     };
 
+    getCycle = (data) => {
+        const { edgesArr: nodesArr , uniqueArr } = data;
+
+        if (nodesArr.length === 0 || uniqueArr.length === 0) {
+            return true;
+        }
+
+        const nodeById = new Map();
+        const stackByNode = new Map();
+        const visitedByNode = new Map();
+        for (const node of uniqueArr) {
+            nodeById.set(node.id, node);
+            stackByNode.set(node, false);
+            visitedByNode.set(node, false);
+        }
+
+        const isCyclic = (node, visited, stack) => {
+            if (!visited.get(node)) {
+                visited.set(node, true);
+                stack.set(node, true);
+
+                const connectedIds = [];
+                nodesArr.forEach(el => { if (el.from === node.id) connectedIds.push(el.to) });
+
+                for (const id of connectedIds) {
+                    const childNode = nodeById.get(id);
+                    if (!visited.get(childNode) && isCyclic(childNode, visited, stack)) {
+                        return true;
+                    } else if (stack.get(childNode)) {
+                        return true;
+                    }
+                }
+            }
+
+            stack.set(node, false);
+
+            return false;
+        };
+
+        for (const node of nodesArr) {
+            const nodeObj = uniqueArr.filter((el) => (el.id === node.from))[0];
+
+            if (isCyclic(nodeObj, visitedByNode, stackByNode)) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     render() {
         return (
             <Router>
@@ -235,11 +286,11 @@ class App extends Component {
                             generateData={this.generateData}
                             getPathes={this.getPathes}
                             transformToMatrix={this.transformToMatrix}
+                            getCycle={this.getCycle}
                         />
                     )}
                     exact
                 />
-
                 <Route
                     path="/modeling"
                     component={() => (
@@ -250,6 +301,20 @@ class App extends Component {
                             transformToMatrix={this.transformToMatrix}
                             generateData={this.generateData}
                             getPathes={this.getPathes}
+                        />
+                    )}
+                    exact
+                />
+                <Route
+                    path="/generation"
+                    component={() => (
+                        <Generator
+                            transformToMatrix={this.transformToMatrix}
+                            generateData={this.generateData}
+                            getPathes={this.getPathes}
+                            getCycle={this.getCycle}
+                            setData={this.setDataTask}
+                            data={this.state.dataTask}
                         />
                     )}
                     exact

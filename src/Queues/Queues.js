@@ -169,7 +169,7 @@ const Queues = (props) => {
 
         const { edgesArr, uniqueArr } = generateData(dataTask);
         const { parents } = parentsAndLasts(dataTask);
-        console.log(parents);
+
         const graph = edgesArr.map((el) => [el.to, el.from]);
         const result  = [];
 

@@ -132,3 +132,7 @@ table {
 h2 {
   cursor: pointer;
 }
+
+.generator {
+  padding-top: 50px;
+}
