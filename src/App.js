@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from './Header/Header';
-import Graph from './Graph/Graph';
-import CompSys from './CompSys/CompSys';
+import SysGraph from './SysGraph/SysGraph';
+import TaskGraph from './TaskGraph/TaskGraph';
 import Queues from './Queues/Queues';
 import Generator from "./Generator/Generator";
+import Planning from "./Planning/Planning";
 
 class App extends Component {
     state = {
@@ -13,6 +14,7 @@ class App extends Component {
         dataTask: [],
         error: false,
         size: 2,
+        queues: {},
     };
 
     setDataGraph = (e) => {
@@ -21,6 +23,10 @@ class App extends Component {
 
     setDataTask = (e) => {
         this.setState({ dataTask: e })
+    };
+
+    setQueues = (e) => {
+        this.setState({ queues: e });
     };
 
     onSelectFile = e => {
@@ -261,7 +267,7 @@ class App extends Component {
                 <Route
                     path="/graph"
                     component={() => (
-                        <Graph
+                        <SysGraph
                             clear={this.clear}
                             onSelectFile={this.onSelectFile}
                             saveFile={this.saveFile}
@@ -277,7 +283,7 @@ class App extends Component {
                 <Route
                     path="/comsys"
                     component={() => (
-                        <CompSys
+                        <TaskGraph
                             clear={this.clear}
                             onSelectFile={this.onSelectFile}
                             saveFile={this.saveFile}
@@ -301,6 +307,7 @@ class App extends Component {
                             transformToMatrix={this.transformToMatrix}
                             generateData={this.generateData}
                             getPathes={this.getPathes}
+                            setQueues={this.setQueues}
                         />
                     )}
                     exact
@@ -315,6 +322,18 @@ class App extends Component {
                             getCycle={this.getCycle}
                             setData={this.setDataTask}
                             data={this.state.dataTask}
+                        />
+                    )}
+                    exact
+                />
+                <Route
+                    path="/planning"
+                    component={() => (
+                        <Planning
+                            dataTask={this.state.dataTask}
+                            dataProc={this.state.dataGraph}
+                            dataQueues={this.state.queues}
+                            generateData={this.generateData}
                         />
                     )}
                     exact

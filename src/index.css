@@ -100,7 +100,6 @@ table {
 
 .graph {
   text-align: center;
-  margin-top: 60px;
 }
 
 .inputTable {
@@ -133,6 +132,6 @@ h2 {
   cursor: pointer;
 }
 
-.generator {
+#root {
   padding-top: 50px;
 }

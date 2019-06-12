@@ -17,7 +17,7 @@ const Header = () => {
                 Генерація
             </Link>
             <Link to="/planning">
-                Планувальник
+                Планування
             </Link>
         </header>
     );

@@ -1,7 +1,7 @@
-import React  from 'react';
+import React from 'react';
 import NetworkGraph from '../NetworkGraph/NetworkGraph';
 
-const CompSys = (props) => {
+const SysGraph = (props) => {
     const {
         onSelectFile,
         saveFile,
@@ -9,18 +9,19 @@ const CompSys = (props) => {
         data,
         setData,
         generateData,
-        getCycle,
+        transformToMatrix,
+        getPathes,
 } = props;
 
     const sysEl = (data) => (
         data && data.map((el, index) =>
             <tr key={index}
+                onChange={changeData}
             >
                 <td>
                     <input
                         type="number"
-                        value={el.from}
-                        onChange={changeData}
+                        defaultValue={el.from}
                         min={1}
                         name='from'
                         data-from={index}
@@ -29,28 +30,9 @@ const CompSys = (props) => {
                 <td>
                     <input
                         type="text"
-                        value={el.to}
+                        defaultValue={el.to}
                         min={1}
-                        onChange={changeData}
                         data-to={index}
-                    />
-                </td>
-                <td>
-                    <input
-                        type="number"
-                        value={el.weight}
-                        min={1}
-                        onChange={changeData}
-                        data-weight={index}
-                    />
-                </td>
-                <td>
-                    <input
-                        type="number"
-                        value={el.edgeweight}
-                        min={1}
-                        onChange={changeData}
-                        data-edgeweight={index}
                     />
                 </td>
                 <td>
@@ -84,15 +66,43 @@ const CompSys = (props) => {
         if (e.target.dataset.to) {
             data[e.target.dataset.to].to = e.target.value;
         }
-        if (e.target.dataset.weight) {
-            data[e.target.dataset.weight].weight = e.target.value;
-        }
-        if (e.target.dataset.edgeweight) {
-            data[e.target.dataset.edgeweight].edgeweight = e.target.value;
-        }
 
         setData(data);
     };
+
+    const checkLinkConnectionFull = (matrix) => {
+        let count = true;
+        matrix.forEach((row) => {
+            row.forEach((el) => {
+                if (el === Infinity) count = false;
+            })
+        });
+
+        return count;
+    };
+
+    const checkLinkConnection = (data) => {
+        const { uniqueArr, edgesArr } = data;
+        uniqueArr.forEach((el) => {
+            let count = 0;
+            edgesArr.forEach((edge) => {
+                if (edge.from === el.id) {
+                    count++;
+                }
+                if (edge.to === el.id) {
+                    count++;
+                }
+            });
+
+            el.count = count;
+        });
+
+        return uniqueArr.filter(el => el.count === 0);
+    };
+
+    const netWorkData = generateData(data, true);
+    const linkConn = checkLinkConnection(netWorkData);
+    const linkConnFull = checkLinkConnectionFull(getPathes(transformToMatrix(netWorkData)));
 
     return (
         <div className="graph">
@@ -126,47 +136,48 @@ const CompSys = (props) => {
                     </span>
                 </div>
             </div>
-            <button onClick={() => { if (!getCycle(generateData(data,false))) alert('Є цикл')} }>Перевірити</button>
             <table>
                 <thead>
-                <tr>
-                    <th>
-                        <span>З</span>
-                    </th>
-                    <th>
-                        <span>До</span>
-                    </th>
-                    <th>
-                        <span>Вага з'єднання</span>
-                    </th>
-                    <th>
-                        <span>Вага ядра</span>
-                    </th>
-                    <th>
-                        <span>Видалити</span>
-                    </th>
-                </tr>
+                    <tr>
+                        <th>
+                            <span>З</span>
+                        </th>
+                        <th>
+                            <span>До</span>
+                        </th>
+                        <th>
+                            <span>Видалити</span>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                {sysEl(data)}
-                <tr>
-                    <td
-                        colSpan={3}
-                        onClick={addEdge}
-                    >
-                        Додати
-                    </td>
-                </tr>
+                    {sysEl(data)}
+                    <tr>
+                        <td
+                            colSpan={3}
+                            onClick={addEdge}
+                        >
+                            Додати
+                        </td>
+                    </tr>
                 </tbody>
             </table>
+            {!(linkConnFull) &&
+                <div className="errors">
+                    <span className="error-title">Помилка зв'язності процесорів</span>
+                    <ul>
+                        {linkConn.map(el => <li key={`unique-${el.id}`}>{el.label}</li>)}
+                    </ul>
+                </div>
+            }
             <h2>Згенерований граф</h2>
             <div className="network">
                 <NetworkGraph
-                    data={generateData(data,false)}
+                    data={netWorkData}
                 />
             </div>
         </div>
     );
 };
 
-export default CompSys;
+export default SysGraph;

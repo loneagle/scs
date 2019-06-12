@@ -6,6 +6,7 @@ const Queues = (props) => {
         transformToMatrix,
         generateData,
         getPathes,
+        setQueues,
     } = props;
 
     const matrix = transformToMatrix(generateData(dataTask));
@@ -224,6 +225,9 @@ const Queues = (props) => {
 
     const q4 = formQueue5(dataTask);
     const q16 = formQueue16(dataTask);
+    const save = (q4, q16) => {
+        setQueues({ q4,q16 });
+    };
 
     return (
         <div>
@@ -250,6 +254,7 @@ const Queues = (props) => {
             <ul>
                 {q16.map((el) => (<li key={el.index}>{el.index} - {el.max}</li>))}
             </ul>
+            <button onClick={() => save(q4, q16)}>Зберегти для призначення</button>
         </div>
     );
 };
