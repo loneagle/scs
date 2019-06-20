@@ -334,6 +334,7 @@ class App extends Component {
                             dataProc={this.state.dataGraph}
                             dataQueues={this.state.queues}
                             generateData={this.generateData}
+                            transformToMatrix={this.transformToMatrix}
                         />
                     )}
                     exact

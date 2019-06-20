@@ -7,6 +7,8 @@
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
+    "react-visjs-timeline": "^1.5.0",
+    "vis": "^4.21.0",
     "vis-react": "^0.4.3"
   },
   "scripts": {
